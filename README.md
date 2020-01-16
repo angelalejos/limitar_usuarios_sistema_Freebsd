@@ -70,119 +70,119 @@ add 3021 count tcp from any to any in uid luis
 add 3031 count tcp from any to any out uid luis
 Nos dirigimos al archivo de configuración "/usr/local/etc/ipa.conf" donde estableceremos que el usuario pepe tenga un tráfico de y ponemos las sucesiva configuración para que pedro tenga un máximo de 500MBytes/2000MBytes [Bajada/Subida] cada 15 días y a luis uno de 10GBytes/5GBytes [Bajada/Subida] al mes.
 
-global {
-    update_db_time = 1m 15s
-}
+    global {
+        update_db_time = 1m 15s
+    }
 donde especificamos que se actualice la base de datos cada minuto y 15 segundos
 
-rule pedro_in {
-	ipfw = 2021
-	info = Trafico de entrada de pedro
-	startup {
-		if_limit_is_reached {
-			exec = /sbin/ipfw add 2015 deny tcp from any to any in uid pedro
-		}
-	}
-	limit 500m {
-		byte_limit = 500m
-		info = 500 Mbytes cada 15dias
-		zero_time = +15d
-		reach {
-			exec = /sbin/ipfw add 2015 deny tcp from any to any in uid pedro
-		}
-		expire {
-			expire_time = +15d
-			exec = /sbin/ipfw del 2015
-		}
-	}
-}
+    rule pedro_in {
+        ipfw = 2021
+        info = Trafico de entrada de pedro
+        startup {
+            if_limit_is_reached {
+                exec = /sbin/ipfw add 2015 deny tcp from any to any in uid pedro
+            }
+        }
+        limit 500m {
+            byte_limit = 500m
+            info = 500 Mbytes cada 15dias
+            zero_time = +15d
+            reach {
+                exec = /sbin/ipfw add 2015 deny tcp from any to any in uid pedro
+            }
+            expire {
+                expire_time = +15d
+                exec = /sbin/ipfw del 2015
+            }
+        }
+    }
 aqui hemos puesto un límite de 500MBytes de entrada cada 15 días que si es alcanzado dejara sin conexiones TCP de entrada al usuario pedro y donde a los 15 días se reinicia de nuevo la cuenta se haya o no superado el límite
 
-rule pedro_out {
-	ipfw = 2031
-	info = Trafico de pedro de salida
-	startup {
-		if_limit_is_reached {
-			exec = /sbin/ipfw add 2025 deny tcp from any to any out uid pedro
-		}
-	}
-	limit 2000m {
-		byte_info = 2000m
-		info = 2000 MBytes cada 15 dias
-		zero_time = +15d
-		reach {
-			exec = /sbin/ipfw add 2025 deny tcp from any to any out uid pedro
-		}
-		expire {
-			expire_time = +15d
-			exec = /sbin/ipfw del 2025
-		}
-	}
-}
+    rule pedro_out {
+        ipfw = 2031
+        info = Trafico de pedro de salida
+        startup {
+            if_limit_is_reached {
+                exec = /sbin/ipfw add 2025 deny tcp from any to any out uid pedro
+            }
+        }
+        limit 2000m {
+            byte_info = 2000m
+            info = 2000 MBytes cada 15 dias
+            zero_time = +15d
+            reach {
+                exec = /sbin/ipfw add 2025 deny tcp from any to any out uid pedro
+            }
+            expire {
+                expire_time = +15d
+                exec = /sbin/ipfw del 2025
+            }
+        }
+    }
 en esta hemos establecido la regla similar a la anterior, pero especificando la salida y el límite de 2000MBytes de salida.
 
 ahora pondre las reglas para el usuario luis, no las comentare por la similitud a las de pedro.
 
-rule luis_in {
-        ipfw = 3021
-        info = Trafico de entrada de luis
-        startup {
-                if_limit_is_reached {
-                        exec = /sbin/ipfw add 3015 deny tcp from any to any in uid luis
-                }
-        }
-        limit 10g {
-                byte_limit = 10g
-                info = 10 Gbytes cada mes
-                zero_time = +M
-                reach {
-                        exec = /sbin/ipfw add 3015 deny tcp from any to any in uid luis
-                }
-                expire {
-                        expire_time = +M
-                        exec = /sbin/ipfw del 3015
-                }
-        }
-}
+        rule luis_in {
+                ipfw = 3021
+                info = Trafico de entrada de luis
+                startup {
+                        if_limit_is_reached {
+                            exec = /sbin/ipfw add 3015 deny tcp from any to any in uid luis
+                    }
+            }
+            limit 10g {
+                    byte_limit = 10g
+                    info = 10 Gbytes cada mes
+                    zero_time = +M
+                    reach {
+                            exec = /sbin/ipfw add 3015 deny tcp from any to any in uid luis
+                    }
+                    expire {
+                            expire_time = +M
+                            exec = /sbin/ipfw del 3015
+                    }
+            }
+    }
 
-rule luis_out {
-        ipfw = 3031
-        info = Trafico de salida de luis
-        startup {
-                if_limit_is_reached {
-                        exec = /sbin/ipfw add 3025 deny tcp from any to any out uid luis
-                }
-        }
-        limit 5g {
-                byte_limit = 5g
-                info = 5 Gbytes cada mes
-                zero_time = +M
-                reach {
-                        exec = /sbin/ipfw add 3025 deny tcp from any to any out uid luis
-                }
-                expire {
-                        expire_time = +M
-                        exec = /sbin/ipfw del 3025
-                }
-        }
-}
+    rule luis_out {
+            ipfw = 3031
+            info = Trafico de salida de luis
+            startup {
+                    if_limit_is_reached {
+                            exec = /sbin/ipfw add 3025 deny tcp from any to any out uid luis
+                    }
+            }
+            limit 5g {
+                    byte_limit = 5g
+                    info = 5 Gbytes cada mes
+                    zero_time = +M
+                    reach {
+                            exec = /sbin/ipfw add 3025 deny tcp from any to any out uid luis
+                    }
+                    expire {
+                            expire_time = +M
+                            exec = /sbin/ipfw del 3025
+                    }
+            }
+    }
 Bueno con todo esto ya tendriamos a nuestros 2 usuarios limitados, para má posibilidades, miraros el manual ipa.conf(5) y para el uso del ipa leeros el ipa(8)
 
 Finalizando
 En cualquier momento podeis ver el estado del tráfico de cada usuario con el comando ipastat
 
 eskan# ipastat -R luis_in
-+---------------------+---------------------+
-| From                | To                  |
-+---------------------+---------------------+
-| 2004.02.01/00:00:00 | 2004.02.29/24:00:00 |
-+---------------------+---------------------+
+    +---------------------+---------------------+
+    | From                | To                  |
+    +---------------------+---------------------+
+    | 2004.02.01/00:00:00 | 2004.02.29/24:00:00 |
+    +---------------------+---------------------+
 
-+----------+----------------------------+-------+--------+
-| Rule     | Info                       | Bytes | Mbytes |
-+----------+----------------------------+-------+--------+
-| luis_in  | Trafico de entrada de luis |    25 |      0 |
-+----------+----------------------------+-------+--------+
+    +----------+----------------------------+-------+--------+
+    | Rule     | Info                       | Bytes | Mbytes |
+    +----------+----------------------------+-------+--------+
+    | luis_in  | Trafico de entrada de luis |    25 |      0 |
+    +----------+----------------------------+-------+--------+
 eskan#
 Como en este ejemplo, podeis ver las características de cada regla y de sus límites, miraros la página del manual ipastat(8) que tiene unas opciones muy completas.
 
