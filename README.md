@@ -38,12 +38,12 @@ Donde decimos que se active el firewall y le especificamos la ruta donde configu
 ipa
 ipa es el software que usaremos para limitar el tráfico, de los usuarios en nuestro caso.
 
-eskan# cd /usr/ports/sysutils/ipa/ && make install clean
+    eskan# cd /usr/ports/sysutils/ipa/ && make install clean
 Ya lo tenemos instalado, el archivo de configuración está localizado en "/usr/local/etc/" con el nombre "ipa.conf"
 
 Para iniciar ipa al iniciar el sistema:
 
-eskan# mv /usr/local/etc/rc.d/ipa.sh.sample /usr/local/etc/rc.d/ipa.sh 
+    eskan# mv /usr/local/etc/rc.d/ipa.sh.sample /usr/local/etc/rc.d/ipa.sh 
 2º Paso.- Configurar ipfw con las reglas adecuadas
 Para esta tarea simplemente tendrás que pensar como quieres asegurar el sistema según tu política de seguridad, no tienes más que consultar las páginas del manual ipfw(8)
 
@@ -171,7 +171,7 @@ Bueno con todo esto ya tendriamos a nuestros 2 usuarios limitados, para má posi
 Finalizando
 En cualquier momento podeis ver el estado del tráfico de cada usuario con el comando ipastat
 
-eskan# ipastat -R luis_in
+    eskan# ipastat -R luis_in
 
         +---------------------+---------------------+
         | From                | To                  |
