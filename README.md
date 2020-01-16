@@ -11,28 +11,28 @@ En este documento se explicará como limitar el ancho de banda y el tráfico de 
 ipfw
 Lo primero que deberemos hacer es tener el firewall, ipfw, en perfecto funcionamiento, para ello configuramos y recompilamos el kernel:
 
-eskan# cd /usr/src/sys/i386/conf
-eskan# cp GENERIC LIMITADO (que sera el nombre de nuestro kernel)
-eskan# ee LIMITADO
+    eskan# cd /usr/src/sys/i386/conf
+    eskan# cp GENERIC LIMITADO (que sera el nombre de nuestro kernel)
+    eskan# ee LIMITADO
 Y le metemos las siguientes lineas:
 
-options DUMMYNET
-options IPDIVERT
-options IPFIREWALL
-options IPFIREWALL_VERBOSE
-options	IPFIREWALL_VERBOSE_LIMIT=# (# = numero de veces que ipfw loguee a 
-syslogd los paquetes de una determinada regla) 
+    options DUMMYNET
+    options IPDIVERT
+    options IPFIREWALL
+    options IPFIREWALL_VERBOSE
+    options	IPFIREWALL_VERBOSE_LIMIT=# (# = numero de veces que ipfw loguee a 
+    syslogd los paquetes de una determinada regla) 
 recompilando:
 
-eskan# config LIMITADO
-eskan# cd ../compile/LIMITADO
-eskan# make depend && make && make install
+    eskan# config LIMITADO
+    eskan# cd ../compile/LIMITADO
+    eskan# make depend && make && make install
 Ya está el kernel apunto.
 
-rc.conf
-firewall_enable="YES"
-firewall_type="/etc/firewall.rules"
-firewall_script="/etc/rc.firewall"
+    rc.conf
+    firewall_enable="YES"
+    firewall_type="/etc/firewall.rules"
+    firewall_script="/etc/rc.firewall"
 Donde decimos que se active el firewall y le especificamos la ruta donde configuraremos nuestro firewall
 
 ipa
@@ -49,14 +49,14 @@ Para esta tarea simplemente tendrás que pensar como quieres asegurar el sistema
 
 En nuestro caso, limitaremos a los usuarios pedro y luis con 60kBps/100kBps y 25kBps/10kBps [bajada/subida] respectivamente para todas las conexiones
 
-add 2020 pipe 1 ip from any to any in uid pedro
-add 2030 pipe 2 ip from any to any out uid pedro
-add 3020 pipe 3 ip from any to any in uid luis
-add 3030 pipe 4 ip from any to any out uid luis
-pipe 1 config bw 60KByte/s
-pipe 2 config bw 100KByte/s
-pipe 3 config bw 25KByte/s
-pipe 4 config bw 10KByte/s
+    add 2020 pipe 1 ip from any to any in uid pedro
+    add 2030 pipe 2 ip from any to any out uid pedro
+    add 3020 pipe 3 ip from any to any in uid luis
+    add 3030 pipe 4 ip from any to any out uid luis
+    pipe 1 config bw 60KByte/s
+    pipe 2 config bw 100KByte/s
+    pipe 3 config bw 25KByte/s
+    pipe 4 config bw 10KByte/s
 con estas simples reglas ya tendremos a los usuarios pedro y luis con el ancho de banda limitado, sin poder en ningú caso superarlo.
 
 3º Paso.- Configurar ipa para limitar el tráfico
@@ -64,10 +64,10 @@ Con ipa podremos limitar el tráfico, en nuestro caso de un usuario, y consultar
 
 Antes de nada, tendremos que establecer unas reglas en el firewall para poder contar el trafico usado:
 
-add 2021 count tcp from any to any in uid pedro
-add 2031 count tcp from any to any out uid pedro
-add 3021 count tcp from any to any in uid luis
-add 3031 count tcp from any to any out uid luis
+    add 2021 count tcp from any to any in uid pedro
+    add 2031 count tcp from any to any out uid pedro
+    add 3021 count tcp from any to any in uid luis
+    add 3031 count tcp from any to any out uid luis
 Nos dirigimos al archivo de configuración "/usr/local/etc/ipa.conf" donde estableceremos que el usuario pepe tenga un tráfico de y ponemos las sucesiva configuración para que pedro tenga un máximo de 500MBytes/2000MBytes [Bajada/Subida] cada 15 días y a luis uno de 10GBytes/5GBytes [Bajada/Subida] al mes.
 
     global {
@@ -172,6 +172,7 @@ Finalizando
 En cualquier momento podeis ver el estado del tráfico de cada usuario con el comando ipastat
 
 eskan# ipastat -R luis_in
+
         +---------------------+---------------------+
         | From                | To                  |
         +---------------------+---------------------+
